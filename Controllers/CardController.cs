@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MTG_WebAPI_NET.Dtos.Card;
+using MTG_WebAPI_NET.Models;
 using MTG_WebAPI_NET.Services.CardService;
 using WebAPI_NET.Models;
 
@@ -20,20 +22,30 @@ namespace MTG_WebAPI_NET.Controllers
         }
 
         [HttpGet("GetAllCards")]
-        public ActionResult<List<Card>> GetAll()
+        public async Task<ActionResult<ServiceResponse<List<GetCardDTO>>>> GetAll()
         {
-            return Ok(_cardService.GetAll());
+            return Ok(await _cardService.GetAll());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Card> GetSingle(int id)
+        public async Task<ActionResult<ServiceResponse<GetCardDTO>>> GetSingle(int id)
         {
-            return Ok(_cardService.GetSingle(id));
+            return Ok(await _cardService.GetSingle(id));
         }
 
-        [HttpPost("AddCard")]
-        public ActionResult<List<Card>> AddCard(Card newCard)
+        [HttpPost]
+        public async Task<ActionResult<ServiceResponse<List<GetCardDTO>>>> AddCard(AddCardDTO newCard)
         {
-            return Ok(_cardService.AddCard(newCard)); }
+            return Ok(await _cardService.AddCard(newCard)); }
+        
+        [HttpPut]
+        public async Task<ActionResult<ServiceResponse<GetCardDTO>>> UpdateCard(UpdateCardDTO updatedCard){
+            return Ok(await _cardService.UpdateCard(updatedCard));
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ServiceResponse<List<GetCardDTO>>>> DeleteCard(int id){
+            return Ok(await _cardService.DeleteCard(id));
+        }
     }
 }
