@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using MTG_WebAPI_NET.Data;
 using MTG_WebAPI_NET.Services.CardService;
 
@@ -11,7 +12,21 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new()
+    {
+        Title = "MTG Cards API",
+        Version = "v1",
+        Contact = new OpenApiContact
+        {
+            Name = "Pedro Santana ",
+            Url = new Uri("https://github.com/PedroSantanaa")
+        },
+    });
+    c.EnableAnnotations();
+});
+
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<ICardService, CardService>();
 
