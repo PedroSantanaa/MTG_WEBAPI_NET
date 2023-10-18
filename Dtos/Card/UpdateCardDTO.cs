@@ -8,11 +8,10 @@ namespace MTG_WebAPI_NET.Dtos.Card
 {
     public class UpdateCardDTO
     {
-        public int Id { get; set; }
-       public required string Name { get; set; } 
-       public required int Strength { get; set; } 
-       public required int Defense { get; set; } 
-       public required string ManaValue {get;set;} 
-       public required Collection CollectionSet { get; set; } 
+        public required string Name { get; set; }
+        public required int Strength { get; set; }
+        public required int Defense { get; set; }
+        public required string ManaValue { get; set; }
+        public required Collection CollectionSet { get; set; }
     }
 }

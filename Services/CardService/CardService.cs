@@ -13,21 +13,6 @@ namespace MTG_WebAPI_NET.Services.CardService
 {
     public class CardService : ICardService
     {
-        private static List<Card> cards = new List<Card>{
-            new Card {
-            Id = 1,
-            Name = "Lotus Cobra",
-            Strength = 2,
-            Defense = 1,
-            ManaValue = "1G",
-            CollectionSet = Collection.ZendikarRising},
-            new Card {
-            Id = 2,
-            Name = "Scute Swarm",
-            Strength = 1,
-            Defense = 1,
-            ManaValue = "2G",
-            CollectionSet = Collection.ZendikarRising}};
         private readonly IMapper _mapper;
         private readonly DataContext _context;
 
@@ -36,24 +21,28 @@ namespace MTG_WebAPI_NET.Services.CardService
             this._mapper = mapper;
             this._context = context;
         }
-        public async Task<ServiceResponse<List<GetCardDTO>>> AddCard(AddCardDTO newCard)
+        public async Task<ServiceResponse<AddCardDTO>> AddCard(AddCardDTO newCard)
         {
-            var serviceResponse = new ServiceResponse<List<GetCardDTO>>();
-            var card = _mapper.Map<Card>(newCard);
-            card.Id = cards.Max(c => c.Id) + 1;
-            cards.Add(card);
-            serviceResponse.Data = cards.Select(c => _mapper.Map<GetCardDTO>(c)).ToList();
+            var serviceResponse = new ServiceResponse<AddCardDTO>();
+            var cardToDb = _mapper.Map<Card>(newCard);
+            await _context.Cards.AddAsync(cardToDb);
+            await _context.SaveChangesAsync();
+            var card = _mapper.Map<AddCardDTO>(newCard);
+            serviceResponse.Data = card;
+            serviceResponse.Message = "Card added.";
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<List<GetCardDTO>>> DeleteCard(int id)
+        public async Task<ServiceResponse<GetCardDTO>> DeleteCard(int id)
         {
-            var serviceResponse = new ServiceResponse<List<GetCardDTO>>();
-            var cardToDelete = cards.FirstOrDefault(c => c.Id == id);
+            var serviceResponse = new ServiceResponse<GetCardDTO>();
+            var cardToDelete = await _context.Cards.FindAsync(id);
             if (cardToDelete != null)
             {
-                cards.Remove(cardToDelete);
-                serviceResponse.Data = cards.Select(c => _mapper.Map<GetCardDTO>(c)).ToList();
+                _context.Cards.Remove(cardToDelete);
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = _mapper.Map<GetCardDTO>(cardToDelete);
+                serviceResponse.Message = "Card deleted.";
             }
             else
             {
@@ -80,18 +69,20 @@ namespace MTG_WebAPI_NET.Services.CardService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetCardDTO>> UpdateCard(UpdateCardDTO updatedCard)
+        public async Task<ServiceResponse<GetCardDTO>> UpdateCard(int id, UpdateCardDTO updatedCard)
         {
             var serviceResponse = new ServiceResponse<GetCardDTO>();
-            var cardToUpdate = cards.FirstOrDefault(card => card.Id == updatedCard.Id);
-            if (cardToUpdate != null)
+            var cardToUpdate = await _context.Cards.FindAsync(id);
+            if (cardToUpdate is not null)
             {
                 cardToUpdate.Name = updatedCard.Name;
                 cardToUpdate.Strength = updatedCard.Strength;
                 cardToUpdate.Defense = updatedCard.Defense;
                 cardToUpdate.ManaValue = updatedCard.ManaValue;
                 cardToUpdate.CollectionSet = updatedCard.CollectionSet;
+                await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<GetCardDTO>(cardToUpdate);
+                serviceResponse.Message = "Card updated.";
             }
             else
             {

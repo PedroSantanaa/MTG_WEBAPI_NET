@@ -12,8 +12,8 @@ namespace MTG_WebAPI_NET.Services.CardService
     {
         Task<ServiceResponse<List<GetCardDTO>>> GetAll();
         Task<ServiceResponse<GetCardDTO>> GetSingle(int id);
-        Task<ServiceResponse<List<GetCardDTO>>> AddCard(AddCardDTO newCard);
-        Task<ServiceResponse<GetCardDTO>> UpdateCard(UpdateCardDTO updatedCard);
-        Task<ServiceResponse<List<GetCardDTO>>> DeleteCard(int id);
+        Task<ServiceResponse<AddCardDTO>> AddCard(AddCardDTO newCard);
+        Task<ServiceResponse<GetCardDTO>> UpdateCard(int id, UpdateCardDTO updatedCard);
+        Task<ServiceResponse<GetCardDTO>> DeleteCard(int id);
     }
 }
